@@ -10,11 +10,31 @@ enum VAlign
 	Top, Bottom
 };
 
+constexpr float epsilon = 1.f/64;
+
 constexpr Vertex::TextureCoords textureIndexToCoords(int id, VAlign v, HAlign h)
 {
-	auto x = id % 8 + h;
-	auto y = id / 8 + v;
-	return {(float)x / 8.f, (float)y / 8.f};
+	auto x = (float)(id % 8);
+	auto y = (float)(id / 8);
+	switch (v)
+	{
+		case Top:
+			y += epsilon;
+			break;
+
+		case Bottom:
+			y += 1 - epsilon;
+	}
+	switch (h)
+	{
+		case Left:
+			x += epsilon;
+			break;
+
+		case Right:
+			x += 1 - epsilon;
+	}
+	return {x / 8.f, y / 8.f};
 }
 
 Cube::Cube(int topTexture, int sideTexture, int bottomTexture)
