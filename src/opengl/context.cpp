@@ -32,6 +32,9 @@ GlContext::GlContext(int width, int height, std::string const& title)
 	glViewport(0, 0, 800, 600);
 	glEnable(GL_MULTISAMPLE);
 	glEnable(GL_DEPTH_TEST);
+	
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
 
 	resetDeltaTime();
 }

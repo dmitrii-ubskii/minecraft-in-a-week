@@ -59,27 +59,27 @@ Cube::Cube(int topTexture, int sideTexture, int bottomTexture)
 		{
 			// top face
 			0, 1, 2,
-			1, 2, 3,
+			1, 3, 2,
 
 			// front face
 			4, 5, 6,
-			5, 6, 7,
+			5, 7, 6,
 
 			// left face
 			8, 9, 10,
-			9, 10, 11,
+			9, 11, 10,
 
 			// back face
 			12, 13, 14,
-			13, 14, 15,
+			13, 15, 14,
 
 			// right face
 			16, 17, 18,
-			17, 18, 19,
+			17, 19, 18,
 
 			// bottom face
 			20, 21, 22,
-			21, 22, 23,
+			21, 23, 22,
 		}
 	}
 {}
