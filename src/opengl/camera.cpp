@@ -11,7 +11,7 @@ void Camera::move(float along, float side)
 
 void Camera::rotate(float deltaPitch, float deltaYaw)
 {
-	pitch = glm::clamp(pitch + deltaPitch, -89.f, 89.f);
+	pitch = glm::clamp(pitch + deltaPitch, -89.9f, 89.9f);
 	yaw += deltaYaw;
 	while (yaw < 0) yaw += 360.f;
 	while (yaw >= 360) yaw -= 360.f;
