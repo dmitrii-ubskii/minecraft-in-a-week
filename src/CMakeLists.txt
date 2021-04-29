@@ -1,6 +1,6 @@
 add_executable(mini-mc
     main.cpp
-    opengl/window.cpp
+    opengl/context.cpp
     opengl/shader.cpp
     opengl/camera.cpp
 )
