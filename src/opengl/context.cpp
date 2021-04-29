@@ -8,7 +8,6 @@ GlContext::GlContext(int width, int height, std::string const& title)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_SAMPLES, 4);
 
 	window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
 
@@ -30,7 +29,7 @@ GlContext::GlContext(int width, int height, std::string const& title)
 	}
 
 	glViewport(0, 0, 800, 600);
-	glEnable(GL_MULTISAMPLE);
+	glDisable(GL_MULTISAMPLE);
 	glEnable(GL_DEPTH_TEST);
 	
     glEnable(GL_CULL_FACE);
@@ -47,7 +46,7 @@ GlContext::~GlContext()
 
 void GlContext::clear()
 {
-	glClearColor(0.f, 0.f, 0.f, 1.f);
+	glClearColor(0.5f, 0.8f, 0.9f, 1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 

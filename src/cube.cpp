@@ -10,30 +10,10 @@ enum VAlign
 	Top, Bottom
 };
 
-constexpr float epsilon = 1.f/64;
-
 constexpr Vertex::TextureCoords textureIndexToCoords(int id, VAlign v, HAlign h)
 {
-	auto x = (float)(id % 8);
-	auto y = (float)(id / 8);
-	switch (v)
-	{
-		case Top:
-			y += epsilon;
-			break;
-
-		case Bottom:
-			y += 1 - epsilon;
-	}
-	switch (h)
-	{
-		case Left:
-			x += epsilon;
-			break;
-
-		case Right:
-			x += 1 - epsilon;
-	}
+	auto x = (float)(h + id % 8);
+	auto y = (float)(v + id / 8);
 	return {x / 8.f, y / 8.f};
 }
 
