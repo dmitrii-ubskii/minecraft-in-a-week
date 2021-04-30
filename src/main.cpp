@@ -10,6 +10,7 @@
 #include "opengl/shader.h"
 
 #include "cube.h"
+#include "perlin.h"
 
 int main()
 {
@@ -41,13 +42,21 @@ int main()
 		stbi_image_free(data);
 	}
 
-	auto const side = 150;
-	glm::vec3 positions[side * side];
+	auto const side = 64;
+	auto const scale = 16;
+	std::vector<glm::vec3> positions;
+	positions.reserve(side * side * scale);
 	for (auto i = 0; i < side; i++)
 	{
 		for (auto j = 0; j < side; j++)
 		{
-			positions[side*i+j] = {i, -3.f, j};
+			auto x = (float)i;
+			auto z = (float)j;
+			auto altitude = (int)std::floor((1 + seeded2dPerlin(123456, (float)i / 16.f, (float)j / 16.f)) * (float)scale);
+			for (auto y = 0; y < altitude; y++)
+			{
+				positions.emplace_back(x, y - 2*scale, z);
+			}
 		}
 	}
 
