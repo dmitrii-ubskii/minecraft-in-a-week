@@ -26,14 +26,30 @@ public:
 	}
 
 	void swapBuffers() { glfwSwapBuffers(window); }
-	void pollEvents() { glfwPollEvents(); }
-	int getKey(int key) { return glfwGetKey(window, key); }
 
+	void grabMouse()
+	{
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		glfwGetCursorPos(window, &cursorX, &cursorY);
+		cursorDeltaX = 0;
+		cursorDeltaY = 0;
+	}
+
+	void pollEvents();
+	int getKey(int key) { return glfwGetKey(window, key); }
+	GLdouble getCursorDeltaX() { return cursorDeltaX; }
+	GLdouble getCursorDeltaY() { return cursorDeltaY; }
 
 private:
 	GLFWwindow* window;
 
 	float lastFrame;
+
+	GLdouble cursorX;
+	GLdouble cursorY;
+
+	GLdouble cursorDeltaX;
+	GLdouble cursorDeltaY;
 };
 
 #endif // SRC_OPENGL_CONTEXT_H_

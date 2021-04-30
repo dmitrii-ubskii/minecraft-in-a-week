@@ -44,6 +44,9 @@ int main()
 	context.resetDeltaTime();
 	auto time = 0.f;
 
+	context.grabMouse();
+	auto const mouseSensitivity = 0.3f;
+
 	while (not context.shouldClose())
 	{
 		context.clear();
@@ -63,14 +66,10 @@ int main()
 		if (context.getKey(GLFW_KEY_D) == GLFW_PRESS)
 			camera.move(0, velocity);
 
-		if (context.getKey(GLFW_KEY_UP) == GLFW_PRESS)
-			camera.rotate(velocity * 10, 0);
-		if (context.getKey(GLFW_KEY_DOWN) == GLFW_PRESS)
-			camera.rotate(-velocity * 10, 0);
-		if (context.getKey(GLFW_KEY_LEFT) == GLFW_PRESS)
-			camera.rotate(0, -velocity * 10);
-		if (context.getKey(GLFW_KEY_RIGHT) == GLFW_PRESS)
-			camera.rotate(0, velocity * 10);
+		camera.rotate(
+			-(float)context.getCursorDeltaY() * mouseSensitivity,
+			(float)context.getCursorDeltaX() * mouseSensitivity
+		);
 
 		quadShader.use();
 		quadShader.setMat4("model", glm::rotate(
