@@ -41,6 +41,16 @@ int main()
 		stbi_image_free(data);
 	}
 
+	auto const side = 150;
+	glm::vec3 positions[side * side];
+	for (auto i = 0; i < side; i++)
+	{
+		for (auto j = 0; j < side; j++)
+		{
+			positions[side*i+j] = {i, -3.f, j};
+		}
+	}
+
 	context.resetDeltaTime();
 	auto time = 0.f;
 
@@ -72,15 +82,15 @@ int main()
 		);
 
 		quadShader.use();
-		quadShader.setMat4("model", glm::rotate(
-				glm::scale(glm::mat4{1.f}, glm::vec3{1.5f}),
-				glm::radians(time * 50.f), glm::vec3{0.f, 1.f, 0.f}
-			)
-		);
 		quadShader.setMat4("view", camera.getViewMatrix());
 		quadShader.setMat4("projection", camera.getProjectionMatrix());
 		quadShader.setInt("textureAtlas", 0);
-		cube.draw();
+		for (auto const& pos: positions)
+		{
+			quadShader.setMat4("model", glm::translate(glm::scale(glm::mat4{1.f}, glm::vec3{0.5f}), pos)
+			);
+			cube.draw();
+		}
 
 		context.swapBuffers();
 		context.pollEvents();
