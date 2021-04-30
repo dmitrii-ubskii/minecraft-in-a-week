@@ -16,6 +16,12 @@ struct Vertex
 		float u;
 		float v;
 	} textureCoords;
+	struct Normal
+	{
+		float x;
+		float y;
+		float z;
+	} normal;
 };
 
 class BasicMesh

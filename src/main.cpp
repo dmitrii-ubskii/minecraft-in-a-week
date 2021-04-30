@@ -16,7 +16,7 @@ int main()
 {
 	auto context = GlContext{800, 600, "Minecraft in a week"};
 
-	auto quadShader = Shader{"shaders/quad.vert", "shaders/quad.frag"};
+	auto blockShader = Shader{"shaders/block.vert", "shaders/block.frag"};
 	Camera camera;
 
 	auto cube = Cube{0, 1, 2};
@@ -52,7 +52,7 @@ int main()
 		{
 			auto x = (float)i;
 			auto z = (float)j;
-			auto altitude = (int)std::floor((1 + seeded2dPerlin(123456, (float)i / 16.f, (float)j / 16.f)) * (float)scale);
+			auto altitude = (int)std::floor((1 + seeded2dPerlin(12356, (float)i / 16.f, (float)j / 16.f)) * (float)scale);
 			for (auto y = 0; y < altitude; y++)
 			{
 				positions.emplace_back(x, y - 2*scale, z);
@@ -90,14 +90,13 @@ int main()
 			(float)context.getCursorDeltaX() * mouseSensitivity
 		);
 
-		quadShader.use();
-		quadShader.setMat4("view", camera.getViewMatrix());
-		quadShader.setMat4("projection", camera.getProjectionMatrix());
-		quadShader.setInt("textureAtlas", 0);
+		blockShader.use();
+		blockShader.setMat4("view", camera.getViewMatrix());
+		blockShader.setMat4("projection", camera.getProjectionMatrix());
+		blockShader.setInt("textureAtlas", 0);
 		for (auto const& pos: positions)
 		{
-			quadShader.setMat4("model", glm::translate(glm::scale(glm::mat4{1.f}, glm::vec3{0.5f}), pos)
-			);
+			blockShader.setMat4("model", glm::translate(glm::scale(glm::mat4{1.f}, glm::vec3{0.5f}), pos));
 			cube.draw();
 		}
 

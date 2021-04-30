@@ -21,6 +21,10 @@ BasicMesh::BasicMesh(std::initializer_list<Vertex> vertices, std::initializer_li
 	glVertexAttribPointer(1, coordsSize, GL_FLOAT, GL_FALSE, sizeof(Vertex), (float*)(sizeof(Vertex::Position)));
 	glEnableVertexAttribArray(1);
 
+	auto normalSize = static_cast<int>(sizeof(Vertex::Normal) / sizeof(float));
+	glVertexAttribPointer(2, normalSize, GL_FLOAT, GL_FALSE, sizeof(Vertex), (float*)(sizeof(Vertex::Position) + sizeof(Vertex::TextureCoords)));
+	glEnableVertexAttribArray(2);
+
 	glGenBuffers(1, &EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	numIndices = static_cast<int>(indices.size());
