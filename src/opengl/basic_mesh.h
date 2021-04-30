@@ -21,7 +21,7 @@ struct Vertex
 class BasicMesh
 {
 public:
-	BasicMesh(std::initializer_list<Vertex>, std::initializer_list<unsigned> indices_);
+	BasicMesh(std::initializer_list<Vertex>, std::initializer_list<unsigned> indices);
 
 	void draw();
 
@@ -30,8 +30,7 @@ private:
 	unsigned VBO;
 	unsigned EBO;
 
-	std::vector<Vertex> vertices;
-	std::vector<unsigned> indices;
+	int numIndices;
 };
 
 #endif // SRC_OPENGL_BASIC_MESH_H_
