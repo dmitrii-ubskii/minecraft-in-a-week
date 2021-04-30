@@ -52,7 +52,7 @@ int main()
 		context.clear();
 		auto deltaTime = context.getDeltaTime();
 		time += deltaTime;
-		auto velocity = deltaTime * 2.5f;
+		auto velocity = deltaTime * 5.f;
 		
 		if (context.getKey(GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			context.setShouldClose(true);
