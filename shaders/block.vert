@@ -4,6 +4,7 @@ layout (location=1) in vec2 aTextureCoords;
 layout (location=2) in vec3 aNormal;
 
 out vec2 textureCoords;
+out vec4 position;
 out vec3 normal;
 
 uniform mat4 model;
@@ -12,7 +13,8 @@ uniform mat4 projection;
 
 void main()
 {
-    gl_Position = projection * view * model * vec4(aPos, 1.0);
+    position = view * model * vec4(aPos, 1.0);
+    gl_Position = projection * position;
     textureCoords = aTextureCoords;
     normal = aNormal;
 }
