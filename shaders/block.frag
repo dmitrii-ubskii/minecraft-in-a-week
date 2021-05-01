@@ -14,8 +14,8 @@ void main()
     fragColor *= 0.3 + 0.7 * (0.5 + 0.5 * dot(-normal, lightDirection));
 
     float dist = length(position.xyz);
-    float minFogDist = 16.0;
-    float maxFogDist = 32.0;
+    float minFogDist = 32.0;
+    float maxFogDist = 48.0;
     float fogFactor = clamp((dist - minFogDist) / (maxFogDist - minFogDist), 0.0, 1.0);
     fragColor = mix(fragColor, vec4(0.5f, 0.8f, 0.9f, 1.f), fogFactor);
 }
