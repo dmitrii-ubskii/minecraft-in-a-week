@@ -12,8 +12,9 @@ public:
 
 	int at(glm::vec2 const& v)
 	{
-		constexpr auto scale = 8.f;
-		auto altitude = std::floor((1 + glm::simplex(glm::vec3{seed, v})) * scale);
+		auto altitude = 0.f;
+		for (auto scale = 1.f; scale < 64.f; scale *= 2.f)
+			altitude += (1 + glm::simplex(glm::vec3{seed, 0.12f + v.x / scale, 0.45f + v.y / scale})) * scale;
 		return (int)altitude;
 	}
 

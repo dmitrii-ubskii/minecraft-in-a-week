@@ -40,10 +40,10 @@ public:
 		{
 			for (auto bz = 0; bz < ChunkDepth; bz++)
 			{
-				auto altitude = device.at({
+				auto altitude = std::clamp(device.at({
 					(float)(bx + chunkCoords.x * ChunkWidth) / 16.f,
 					(float)(bz + chunkCoords.z * ChunkDepth) / 16.f
-				});
+				}), 0, ChunkHeight - 1);
 				for (auto by = 0; by < altitude; by++)
 					blocks[localCoordsToIndex({bx, by, bz})] = BlockType::Grass;
 				for (auto by = altitude; by < ChunkHeight; by++)
