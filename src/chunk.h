@@ -18,7 +18,7 @@
 
 enum class BlockType
 {
-	Air, Grass
+	Air, Grass, Dirt
 };
 
 struct Coords
@@ -35,6 +35,7 @@ public:
 		: chunkCoords{x, 0, z}
 	{
 		cubes.insert({BlockType::Grass, Cube{0, 1, 2}});
+		cubes.insert({BlockType::Dirt, Cube{2, 2, 2}});
 
 		for (auto bx = 0; bx < ChunkWidth; bx++)
 		{
@@ -44,8 +45,9 @@ public:
 					(float)(bx + chunkCoords.x * ChunkWidth) / 16.f,
 					(float)(bz + chunkCoords.z * ChunkDepth) / 16.f
 				}), 0, ChunkHeight - 1);
-				for (auto by = 0; by < altitude; by++)
-					blocks[localCoordsToIndex({bx, by, bz})] = BlockType::Grass;
+				for (auto by = 0; by < altitude - 1; by++)
+					blocks[localCoordsToIndex({bx, by, bz})] = BlockType::Dirt;
+				blocks[localCoordsToIndex({bx, altitude - 1, bz})] = BlockType::Grass;
 				for (auto by = altitude; by < ChunkHeight; by++)
 					blocks[localCoordsToIndex({bx, by, bz})] = BlockType::Air;
 			}
