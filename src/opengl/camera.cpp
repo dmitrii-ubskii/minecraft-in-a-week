@@ -24,7 +24,7 @@ glm::mat4 Camera::getViewMatrix() const
 
 glm::mat4 Camera::getProjectionMatrix() const
 {
-	return glm::perspective(glm::radians(45.f), 4.f/3.f, .1f, 100.f);
+	return glm::perspective(glm::radians(45.f), 4.f/3.f, .1f, 1000.f);
 }
 
 glm::vec3 Camera::getDirection() const
