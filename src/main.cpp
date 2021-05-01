@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include <glm/gtx/transform.hpp>
+#include <glm/gtc/noise.hpp>
 
 #include <stb_image.h>
 
@@ -10,7 +11,6 @@
 #include "opengl/shader.h"
 
 #include "cube.h"
-#include "perlin.h"
 
 int main()
 {
@@ -43,7 +43,7 @@ int main()
 	}
 
 	auto const side = 64;
-	auto const scale = 16;
+	auto const scale = 8;
 	std::vector<glm::vec3> positions;
 	positions.reserve(side * side * scale);
 	for (auto i = 0; i < side; i++)
@@ -52,7 +52,7 @@ int main()
 		{
 			auto x = (float)i;
 			auto z = (float)j;
-			auto altitude = (int)std::floor((1 + seeded2dPerlin(12356, (float)i / 16.f, (float)j / 16.f)) * (float)scale);
+			auto altitude = (int)std::floor((1 + glm::simplex(glm::vec3{12356.f, (float)i / 32.f, (float)j / 32.f})) * (float)scale);
 			for (auto y = 0; y < altitude; y++)
 			{
 				positions.emplace_back(x, y - 2*scale, z);
