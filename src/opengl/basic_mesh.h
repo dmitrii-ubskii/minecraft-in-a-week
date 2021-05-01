@@ -27,6 +27,7 @@ struct Vertex
 class BasicMesh
 {
 public:
+	BasicMesh() {}
 	BasicMesh(std::initializer_list<Vertex>, std::initializer_list<unsigned> indices);
 	BasicMesh(std::vector<Vertex> const&, std::vector<unsigned> const& indices);
 

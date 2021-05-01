@@ -47,7 +47,7 @@ int main()
 
 	context.grabMouse();
 	auto const mouseSensitivity = 0.3f;
-	auto const drawDistance = 3;
+	auto const drawDistance = 10;
 
 	while (not context.shouldClose())
 	{
