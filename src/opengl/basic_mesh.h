@@ -28,10 +28,13 @@ class BasicMesh
 {
 public:
 	BasicMesh(std::initializer_list<Vertex>, std::initializer_list<unsigned> indices);
+	BasicMesh(std::vector<Vertex> const&, std::vector<unsigned> const& indices);
 
 	void draw();
 
 private:
+	BasicMesh(Vertex const*, std::size_t, unsigned const*, std::size_t);
+
 	unsigned VAO;
 	unsigned VBO;
 	unsigned EBO;
