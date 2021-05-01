@@ -1,8 +1,6 @@
 #include <array>
 #include <iostream>
-
-#include <glm/gtx/transform.hpp>
-#include <glm/gtc/noise.hpp>
+#include <map>
 
 #include <stb_image.h>
 
@@ -10,7 +8,8 @@
 #include "opengl/context.h"
 #include "opengl/shader.h"
 
-#include "cube.h"
+#include "chunk.h"
+#include "seeded_noise.h"
 
 int main()
 {
@@ -18,8 +17,6 @@ int main()
 
 	auto blockShader = Shader{"shaders/block.vert", "shaders/block.frag"};
 	Camera camera;
-
-	auto cube = Cube{0, 1, 2};
 
 	// Atlas stuff
 	unsigned textureId;
@@ -42,36 +39,23 @@ int main()
 		stbi_image_free(data);
 	}
 
-	auto const side = 64;
-	auto const scale = 8;
-	std::vector<glm::vec3> positions;
-	positions.reserve(side * side * scale);
-	for (auto i = 0; i < side; i++)
-	{
-		for (auto j = 0; j < side; j++)
-		{
-			auto x = (float)i;
-			auto z = (float)j;
-			auto altitude = (int)std::floor((1 + glm::simplex(glm::vec3{12356.f, (float)i / 32.f, (float)j / 32.f})) * (float)scale);
-			for (auto y = 0; y < altitude; y++)
-			{
-				positions.emplace_back(x, y - 2*scale, z);
-			}
-		}
-	}
+	Noise noiseDevice{123456};
+	auto chunks = std::map<std::pair<int, int>, Chunk>{};
 
 	context.resetDeltaTime();
 	auto time = 0.f;
 
 	context.grabMouse();
 	auto const mouseSensitivity = 0.3f;
+	auto const drawDistance = 3;
 
 	while (not context.shouldClose())
 	{
 		context.clear();
 		auto deltaTime = context.getDeltaTime();
 		time += deltaTime;
-		auto velocity = deltaTime * 5.f;
+		auto velocity = deltaTime * 15.f;
+		std::cerr << (int)(1.f/deltaTime) << " FPS\n";
 		
 		if (context.getKey(GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			context.setShouldClose(true);
@@ -94,10 +78,35 @@ int main()
 		blockShader.setMat4("view", camera.getViewMatrix());
 		blockShader.setMat4("projection", camera.getProjectionMatrix());
 		blockShader.setInt("textureAtlas", 0);
-		for (auto const& pos: positions)
+
+		auto cameraPos = camera.getPosition();
+		auto playerChunk = getBlockChunk({(int)cameraPos.x, (int)cameraPos.y, (int)cameraPos.z});
+		for (auto delta = 0; delta <= drawDistance; delta++)
 		{
-			blockShader.setMat4("model", glm::translate(glm::scale(glm::mat4{1.f}, glm::vec3{0.5f}), pos));
-			cube.draw();
+			bool generated = false;
+			for (auto dx = -delta; dx <= delta && not generated; dx++)
+			{
+				for (auto dz = -delta; dz <= delta && not generated; dz++)
+				{
+					auto x = playerChunk.x + dx;
+					auto z = playerChunk.z + dz;
+					if (not chunks.contains({x, z}))
+					{
+						chunks.insert({std::pair{x, z}, Chunk{x, z, noiseDevice}});
+						generated = true;
+					}
+				}
+			}
+			if (generated)
+				break;
+		}
+
+		for (auto& [coords, chunk]: chunks)
+		{
+			if (std::abs(playerChunk.x - coords.first) > drawDistance ||
+					std::abs(playerChunk.z - coords.second) > drawDistance)
+				continue;
+			chunk.draw(blockShader);
 		}
 
 		context.swapBuffers();

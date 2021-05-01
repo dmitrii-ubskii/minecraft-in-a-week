@@ -1,0 +1,3 @@
+[submodule "extern/deeyou"]
+	path = extern/deeyou
+	url = git@github.com:dmitrii-ubskii/deeyou.git
