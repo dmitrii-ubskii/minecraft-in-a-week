@@ -132,9 +132,17 @@ int main()
 		shadowShader.setVec3("lightDirection", lightDirection);
 		for (auto& [coords, chunk]: chunks)
 		{
-			if (std::abs(playerChunk.x - coords.first) > drawDistance ||
-					std::abs(playerChunk.z - coords.second) > drawDistance)
+			auto [x, z] = coords;
+			if (std::abs(playerChunk.x - x) > drawDistance ||
+					std::abs(playerChunk.z - z) > drawDistance)
 				continue;
+			if (std::abs(playerChunk.x - x) > 3 ||
+					std::abs(playerChunk.z - z) > 3)
+			{
+				auto direction = glm::normalize(glm::vec3{x - playerChunk.x, 0, z - playerChunk.z});
+				if (glm::dot(direction, camera.getDirection()) < 0.25f)
+					continue;
+			}
 			chunk.draw(shadowShader);
 		}
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -153,9 +161,17 @@ int main()
 		blockShader.setInt("shadowMap", 1);
 		for (auto& [coords, chunk]: chunks)
 		{
-			if (std::abs(playerChunk.x - coords.first) > drawDistance ||
-					std::abs(playerChunk.z - coords.second) > drawDistance)
+			auto [x, z] = coords;
+			if (std::abs(playerChunk.x - x) > drawDistance ||
+					std::abs(playerChunk.z - z) > drawDistance)
 				continue;
+			if (std::abs(playerChunk.x - x) > 3 ||
+					std::abs(playerChunk.z - z) > 3)
+			{
+				auto direction = glm::normalize(glm::vec3{x - playerChunk.x, 0, z - playerChunk.z});
+				if (glm::dot(direction, camera.getDirection()) < 0.25f)
+					continue;
+			}
 			chunk.draw(blockShader);
 		}
 
