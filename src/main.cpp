@@ -77,7 +77,7 @@ int main()
 		context.clear();
 		auto deltaTime = context.getDeltaTime();
 		time += deltaTime;
-		auto velocity = deltaTime * 15.f;
+		auto velocity = deltaTime * 35.f;
 		std::cerr << (int)(1.f/deltaTime) << " FPS\n";
 		
 		if (context.getKey(GLFW_KEY_ESCAPE) == GLFW_PRESS)
