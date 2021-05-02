@@ -1,6 +1,7 @@
 #include <array>
 #include <iostream>
 #include <map>
+#include <optional>
 
 #include <stb_image.h>
 
@@ -71,6 +72,36 @@ int main()
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// selected block highlight
+	auto selectionShader = Shader{"shaders/selection.vert", "shaders/selection.frag"};
+	float vertices[] = {
+		0.f, 0.f, 0.f,
+		0.f, 0.f, 1.f,
+		0.f, 1.f, 0.f,
+		0.f, 1.f, 1.f,
+		1.f, 0.f, 0.f,
+		1.f, 0.f, 1.f,
+		1.f, 1.f, 0.f,
+		1.f, 1.f, 1.f,
+    };
+    unsigned int indices[] = {
+		0, 1, 3, 2,
+		0, 4, 5, 7,
+		6, 2, 3, 7,
+		6, 4, 5, 1
+    };
+    unsigned int VBO, VAO, EBO;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
 
 	while (not context.shouldClose())
 	{
@@ -178,6 +209,39 @@ int main()
 					continue;
 			}
 			chunk.draw(blockShader);
+		}
+
+		// ray casting
+		auto activeBlock = std::optional<Coords>{};
+		for (auto t = 0; t < drawDistance * 16; t++)
+		{
+			auto block = Coords{cameraPos + (float)t * camera.getDirection()};
+			if (block.y > 255) break;
+			auto chunkCoords = getBlockChunk(block);
+			if (chunks.contains({chunkCoords.x, chunkCoords.z}))
+			{
+				if (chunks.at({chunkCoords.x, chunkCoords.z})[block] != BlockType::Air)
+				{
+					activeBlock = block;
+					break;
+				}
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		if (activeBlock.has_value())
+		{
+			glClear(GL_DEPTH_BUFFER_BIT);
+			selectionShader.use();
+			selectionShader.setMat4("view", camera.getViewMatrix());
+			selectionShader.setMat4("projection", camera.getProjectionMatrix());
+			selectionShader.setMat4("model", glm::translate(glm::mat4{1.f}, glm::vec3{*activeBlock}));
+			glBindVertexArray(VAO);
+			glDrawElements(GL_LINE_STRIP, std::size(indices), GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
 		}
 
 		context.swapBuffers();
