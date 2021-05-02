@@ -99,24 +99,26 @@ int main()
 
 		auto cameraPos = camera.getPosition();
 		auto playerChunk = getBlockChunk({(int)cameraPos.x, (int)cameraPos.y, (int)cameraPos.z});
-		for (auto delta = 0; delta <= drawDistance; delta++)
+		bool generated = false;
+		for (auto i = 0, x = 0, z = 0, dx = 0, dz = -1;
+			 i < (2 * drawDistance + 1) * (2 * drawDistance + 1) && not generated;
+			 i++, x += dx, z += dz)
 		{
-			bool generated = false;
-			for (auto dx = -delta; dx <= delta && not generated; dx++)
+			auto cx = playerChunk.x + x;
+			auto cz = playerChunk.z + z;
+			if (not chunks.contains({cx, cz}))
 			{
-				for (auto dz = -delta; dz <= delta && not generated; dz++)
-				{
-					auto x = playerChunk.x + dx;
-					auto z = playerChunk.z + dz;
-					if (not chunks.contains({x, z}))
-					{
-						chunks.insert({std::pair{x, z}, Chunk{x, z, noiseDevice}});
-						generated = true;
-					}
-				}
+				chunks.insert({std::pair{cx, cz}, Chunk{cx, cz, noiseDevice}});
+				generated = true;
 			}
-			if (generated)
-				break;
+
+			if (x == z || (x == -z && x < 0) || (x == 1-z && x > 0))  // if at a diagonal
+			{
+				// rotate direction
+				auto t = dx;
+				dx = -dz;
+				dz = t;
+			}
 		}
 
 		auto lightPosition = glm::vec3{cameraPos.x - lightDirection.x * 100.f, 256.f, cameraPos.z - lightDirection.z * 100.f};
