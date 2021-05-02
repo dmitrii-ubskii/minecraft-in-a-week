@@ -28,7 +28,7 @@ GlContext::GlContext(int width, int height, std::string const& title)
 		throw;
 	}
 
-	glViewport(0, 0, 800, 600);
+	setViewport();
 	glDisable(GL_MULTISAMPLE);
 	glEnable(GL_DEPTH_TEST);
 	

@@ -37,6 +37,7 @@ int main()
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 		stbi_image_free(data);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 	Noise noiseDevice{123456};
@@ -49,6 +50,26 @@ int main()
 	auto const mouseSensitivity = 0.3f;
 	auto const drawDistance = 10;
 	auto const lightDirection = glm::normalize(glm::vec3{2, -3, 1});
+
+	auto shadowShader = Shader{"shaders/shadow_map.vert", "shaders/shadow_map.frag"};
+
+	unsigned shadowMapFBO;
+	glGenFramebuffers(1, &shadowMapFBO);
+	unsigned shadowMap;
+	glGenTextures(1, &shadowMap);
+	glBindTexture(GL_TEXTURE_2D, shadowMap);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 4096, 4096, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowMap, 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	while (not context.shouldClose())
 	{
@@ -97,12 +118,38 @@ int main()
 				break;
 		}
 
+		auto lightPosition = glm::vec3{cameraPos.x - lightDirection.x * 100.f, 256.f, cameraPos.z - lightDirection.z * 100.f};
+		auto lightSpace = glm::ortho(-100.f, 100.f, -100.f, 100.f, 1.f, 1000.f) *
+			glm::lookAt(lightPosition, lightPosition + lightDirection, glm::vec3{0.f, 1.f, 0.f});
+
+		// render shadow map
+		glViewport(0, 0, 4096, 4096);
+		glBindFramebuffer(GL_FRAMEBUFFER, shadowMapFBO);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		shadowShader.use();
+		shadowShader.setMat4("lightSpace", lightSpace);
+		shadowShader.setVec3("lightDirection", lightDirection);
+		for (auto& [coords, chunk]: chunks)
+		{
+			if (std::abs(playerChunk.x - coords.first) > drawDistance ||
+					std::abs(playerChunk.z - coords.second) > drawDistance)
+				continue;
+			chunk.draw(shadowShader);
+		}
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		context.setViewport();
 		blockShader.use();
 		blockShader.setMat4("view", camera.getViewMatrix());
 		blockShader.setMat4("projection", camera.getProjectionMatrix());
+		blockShader.setMat4("lightSpace", lightSpace);
 		blockShader.setVec3("lightDirection", lightDirection);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textureId);
 		blockShader.setInt("textureAtlas", 0);
-
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, shadowMap);
+		blockShader.setInt("shadowMap", 1);
 		for (auto& [coords, chunk]: chunks)
 		{
 			if (std::abs(playerChunk.x - coords.first) > drawDistance ||

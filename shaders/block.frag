@@ -4,14 +4,29 @@ out vec4 fragColor;
 in vec2 textureCoords;
 in vec4 position;
 in vec3 normal;
+in vec3 shadowCoords;
 
 uniform sampler2D textureAtlas;
+uniform sampler2D shadowMap;
 uniform vec3 lightDirection;
 
 void main()
 {
     fragColor = texture(textureAtlas, textureCoords);
-    fragColor *= 0.3 + 0.7 * (0.5 + 0.5 * dot(-normal, lightDirection));
+    
+    float lightIntensity = 0.5 + 0.5 * dot(-normal, lightDirection);
+
+    float lightBarrierDepth = texture(shadowMap, shadowCoords.xy).r;
+    float lightDepth = shadowCoords.z;
+
+    float bias = max(1e-4 * (1.0 - dot(normal, lightDirection)), 2e-5); 
+    if (lightDepth - bias > lightBarrierDepth)
+    {
+        lightIntensity = 0.0;
+    }
+
+    fragColor *= 0.3 + 0.7 * lightIntensity;
+    fragColor.a = 1;
 
     float dist = length(position.xyz);
     float minFogDist = 120.0;

@@ -12,6 +12,8 @@ public:
 	GlContext(int width, int height, std::string const& title);
 	~GlContext();
 
+	void setViewport() { glViewport(0, 0, 800, 600); }
+
 	bool shouldClose() const { return glfwWindowShouldClose(window); }
 	void setShouldClose(bool value) { glfwSetWindowShouldClose(window, value); }
 
