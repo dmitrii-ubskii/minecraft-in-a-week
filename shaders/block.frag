@@ -6,10 +6,10 @@ in vec4 position;
 in vec3 normal;
 
 uniform sampler2D textureAtlas;
+uniform vec3 lightDirection;
 
 void main()
 {
-    vec3 lightDirection = normalize(vec3(2, -3, 1));
     fragColor = texture(textureAtlas, textureCoords);
     fragColor *= 0.3 + 0.7 * (0.5 + 0.5 * dot(-normal, lightDirection));
 

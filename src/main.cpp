@@ -48,6 +48,7 @@ int main()
 	context.grabMouse();
 	auto const mouseSensitivity = 0.3f;
 	auto const drawDistance = 10;
+	auto const lightDirection = glm::normalize(glm::vec3{2, -3, 1});
 
 	while (not context.shouldClose())
 	{
@@ -77,6 +78,7 @@ int main()
 		blockShader.use();
 		blockShader.setMat4("view", camera.getViewMatrix());
 		blockShader.setMat4("projection", camera.getProjectionMatrix());
+		blockShader.setVec3("lightDirection", lightDirection);
 		blockShader.setInt("textureAtlas", 0);
 
 		auto cameraPos = camera.getPosition();
