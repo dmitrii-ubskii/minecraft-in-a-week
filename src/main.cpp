@@ -264,9 +264,14 @@ int main()
 		// ray casting
 		auto placementBlock = std::optional<Coords>{};
 		auto activeBlock = std::optional<Coords>{};
-		for (auto t = 0; t < 16; t++)
+		for (auto t = 0; t < 32; t++)
 		{
-			auto block = Coords{cameraPos + (float)t * camera.getDirection()};
+			auto fBlock = cameraPos + (float)t * 0.5f * camera.getDirection();
+			auto block = Coords{
+				std::floor(fBlock.x),
+				std::floor(fBlock.y),
+				std::floor(fBlock.z)
+			};
 			if (block.y > 255) break;
 			auto chunkCoords = getBlockChunk(block);
 			if (chunks.contains({chunkCoords.x, chunkCoords.z}))
