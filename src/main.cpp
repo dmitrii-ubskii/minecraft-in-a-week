@@ -103,6 +103,56 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+	// quad
+	auto quadShader = Shader{"shaders/quad.vert", "shaders/quad.frag"};
+	float quadVertices[] = {
+        // positions          // texture coords
+         1.0f,  1.0f, 0.0f,   1.0f, 1.0f, // top right
+         1.0f, -1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+        -1.0f, -1.0f, 0.0f,   0.0f, 0.0f, // bottom left
+        -1.0f,  1.0f, 0.0f,   0.0f, 1.0f  // top left 
+    };
+    unsigned int quadIndices[] = {
+        0, 3, 1,
+        1, 3, 2
+    };
+    unsigned int quadVBO, quadVAO, quadEBO;
+    glGenVertexArrays(1, &quadVAO);
+    glGenBuffers(1, &quadVBO);
+    glGenBuffers(1, &quadEBO);
+    glBindVertexArray(quadVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quadEBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(quadIndices), quadIndices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+	// end quad
+
+	// Atlas stuff
+	unsigned crosshair;
+	{
+		glGenTextures(1, &crosshair);
+		glBindTexture(GL_TEXTURE_2D, crosshair);
+	
+		// nearest neighbour texture scaling
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+		// no texture wrapping
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+		int width, height, nrChannels;
+		unsigned char* data = stbi_load("data/crosshair.png", &width, &height, &nrChannels, 4);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+		stbi_image_free(data);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
 	while (not context.shouldClose())
 	{
 		context.clear();
@@ -243,6 +293,14 @@ int main()
 			glDrawElements(GL_LINE_STRIP, std::size(indices), GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);
 		}
+
+		quadShader.use();
+		quadShader.setVec2("scale", {16.f/800.f, 16.f/600.f});
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, crosshair);
+		quadShader.setInt("image", 0);
+		glBindVertexArray(quadVAO);
+		glDrawElements(GL_TRIANGLES, std::size(quadIndices), GL_UNSIGNED_INT, 0);
 
 		context.swapBuffers();
 		context.pollEvents();

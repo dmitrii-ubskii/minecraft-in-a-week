@@ -3,11 +3,10 @@ out vec4 fragColor;
 
 in vec2 textureCoords;
 
-uniform sampler2D textureAtlas;
+uniform sampler2D image;
 
 void main()
 {
-    fragColor = texture(textureAtlas, textureCoords);
-    fragColor = fragColor + vec4(1-fragColor.a, 0.0, 1-fragColor.a, 1-fragColor.a);
+    fragColor = texture(image, textureCoords);
 }
 
