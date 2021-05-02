@@ -20,10 +20,10 @@ int main()
 	Camera camera;
 
 	// Atlas stuff
-	unsigned textureId;
+	unsigned textureAtlas;
 	{
-		glGenTextures(1, &textureId);
-		glBindTexture(GL_TEXTURE_2D, textureId);
+		glGenTextures(1, &textureAtlas);
+		glBindTexture(GL_TEXTURE_2D, textureAtlas);
 	
 		// nearest neighbour texture scaling
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -189,7 +189,7 @@ int main()
 		blockShader.setVec3("lightDirection", lightDirection);
 		blockShader.setFloat("renderDistance", drawDistance * 16.f);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textureId);
+		glBindTexture(GL_TEXTURE_2D, textureAtlas);
 		blockShader.setInt("textureAtlas", 0);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, shadowMap);
