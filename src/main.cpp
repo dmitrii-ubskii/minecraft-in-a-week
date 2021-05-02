@@ -49,7 +49,7 @@ int main()
 	context.grabMouse();
 	auto const mouseSensitivity = 0.3f;
 	auto const drawDistance = 10;
-	auto const lightDirection = glm::normalize(glm::vec3{2, -3, 1});
+	auto const lightDirection = glm::normalize(glm::vec3{6, -3, 1});
 
 	auto shadowShader = Shader{"shaders/shadow_map.vert", "shaders/shadow_map.frag"};
 

@@ -19,7 +19,7 @@ void main()
     float lightBarrierDepth = texture(shadowMap, shadowCoords.xy).r;
     float lightDepth = shadowCoords.z;
 
-    float bias = max(1e-4 * (1.0 - dot(normal, lightDirection)), 2e-5); 
+    float bias = max(2e-4 * (1.0 - dot(normal, lightDirection)), 2e-5); 
     if (lightDepth - bias > lightBarrierDepth)
     {
         lightIntensity = 0.0;
