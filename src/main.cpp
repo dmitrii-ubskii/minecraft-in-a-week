@@ -159,7 +159,7 @@ int main()
 		auto deltaTime = context.getDeltaTime();
 		time += deltaTime;
 		auto velocity = deltaTime * 35.f;
-		std::cerr << (int)(1.f/deltaTime) << " FPS\n";
+		std::cerr << "             \r" << (int)(1.f/deltaTime) << " FPS\r";
 		
 		if (context.getKey(GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			context.setShouldClose(true);
