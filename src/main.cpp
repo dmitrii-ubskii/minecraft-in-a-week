@@ -135,11 +135,12 @@ int main()
 		for (auto& [coords, chunk]: chunks)
 		{
 			auto [x, z] = coords;
-			if (std::abs(playerChunk.x - x) > drawDistance ||
-					std::abs(playerChunk.z - z) > drawDistance)
+			auto dx = playerChunk.x - x;
+			auto dz = playerChunk.z - z;
+			auto squareDist = dx * dx + dz * dz;
+			if (squareDist > drawDistance * drawDistance)
 				continue;
-			if (std::abs(playerChunk.x - x) > 3 ||
-					std::abs(playerChunk.z - z) > 3)
+			if (squareDist > 9)
 			{
 				auto direction = glm::normalize(glm::vec3{x - playerChunk.x, 0, z - playerChunk.z});
 				if (glm::dot(direction, camera.getDirection()) < 0.25f)
@@ -165,14 +166,15 @@ int main()
 		for (auto& [coords, chunk]: chunks)
 		{
 			auto [x, z] = coords;
-			if (std::abs(playerChunk.x - x) > drawDistance ||
-					std::abs(playerChunk.z - z) > drawDistance)
+			auto dx = playerChunk.x - x;
+			auto dz = playerChunk.z - z;
+			auto squareDist = dx * dx + dz * dz;
+			if (squareDist > drawDistance * drawDistance)
 				continue;
-			if (std::abs(playerChunk.x - x) > 3 ||
-					std::abs(playerChunk.z - z) > 3)
+			if (squareDist > 9)
 			{
 				auto direction = glm::normalize(glm::vec3{x - playerChunk.x, 0, z - playerChunk.z});
-				if (glm::dot(direction, camera.getDirection()) < 0.25f)
+				if (glm::dot(direction, camera.getDirection()) < 0)
 					continue;
 			}
 			chunk.draw(blockShader);
