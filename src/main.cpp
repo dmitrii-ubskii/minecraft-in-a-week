@@ -155,6 +155,7 @@ int main()
 		blockShader.setMat4("projection", camera.getProjectionMatrix());
 		blockShader.setMat4("lightSpace", lightSpace);
 		blockShader.setVec3("lightDirection", lightDirection);
+		blockShader.setFloat("renderDistance", drawDistance * 16.f);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textureId);
 		blockShader.setInt("textureAtlas", 0);

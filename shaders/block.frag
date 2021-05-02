@@ -9,6 +9,7 @@ in vec3 shadowCoords;
 uniform sampler2D textureAtlas;
 uniform sampler2D shadowMap;
 uniform vec3 lightDirection;
+uniform float renderDistance;
 
 void main()
 {
@@ -29,8 +30,8 @@ void main()
     fragColor.a = 1;
 
     float dist = length(position.xyz);
-    float minFogDist = 120.0;
-    float maxFogDist = 160.0;
+    float minFogDist = 0.8 * renderDistance;
+    float maxFogDist = renderDistance;
     float fogFactor = clamp((dist - minFogDist) / (maxFogDist - minFogDist), 0.0, 1.0);
     fragColor = mix(fragColor, vec4(0.5f, 0.8f, 0.9f, 1.f), fogFactor);
 }
