@@ -15,7 +15,7 @@ public:
 	glm::vec3 getPosition() const { return position; }
 
 private:
-	glm::vec3 position{2.f, 20.f, 3.f};
+	glm::vec3 position{2.f, 100.f, 3.f};
 	glm::vec3 getDirection() const;
 	float pitch{-45.f};
 	float yaw{45.f};
