@@ -21,12 +21,7 @@ enum class BlockType
 	Air, Grass, Dirt
 };
 
-struct Coords
-{
-	int x;
-	int y;
-	int z;
-};
+using Coords = glm::vec<3, int>;
 
 class Chunk
 {
@@ -61,11 +56,7 @@ public:
 
 	BlockType& operator[](Coords globalCoords)
 	{
-		auto localCoords = Coords{
-			.x = globalCoords.x - chunkCoords.x * ChunkWidth,
-			.y = globalCoords.y - chunkCoords.y * ChunkHeight,
-			.z = globalCoords.z - chunkCoords.z * ChunkDepth
-		};
+		auto localCoords = globalCoords - chunkCoords * glm::vec<3, int>{ChunkWidth, ChunkHeight, ChunkDepth};
 		return blocks[localCoordsToIndex(localCoords)];
 	}
 
@@ -187,9 +178,9 @@ private:
 constexpr Coords getBlockChunk(Coords globalCoords)
 {
 	return {
-		.x = DU::floorDiv(globalCoords.x, Chunk::ChunkWidth),
-		.y = DU::floorDiv(globalCoords.y, Chunk::ChunkHeight),
-		.z = DU::floorDiv(globalCoords.z, Chunk::ChunkDepth)
+		DU::floorDiv(globalCoords.x, Chunk::ChunkWidth),
+		DU::floorDiv(globalCoords.y, Chunk::ChunkHeight),
+		DU::floorDiv(globalCoords.z, Chunk::ChunkDepth)
 	};
 }
 
