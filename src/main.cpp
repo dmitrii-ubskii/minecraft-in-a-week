@@ -75,12 +75,6 @@ int main()
 			(float)context.getCursorDeltaX() * mouseSensitivity
 		);
 
-		blockShader.use();
-		blockShader.setMat4("view", camera.getViewMatrix());
-		blockShader.setMat4("projection", camera.getProjectionMatrix());
-		blockShader.setVec3("lightDirection", lightDirection);
-		blockShader.setInt("textureAtlas", 0);
-
 		auto cameraPos = camera.getPosition();
 		auto playerChunk = getBlockChunk({(int)cameraPos.x, (int)cameraPos.y, (int)cameraPos.z});
 		for (auto delta = 0; delta <= drawDistance; delta++)
@@ -102,6 +96,12 @@ int main()
 			if (generated)
 				break;
 		}
+
+		blockShader.use();
+		blockShader.setMat4("view", camera.getViewMatrix());
+		blockShader.setMat4("projection", camera.getProjectionMatrix());
+		blockShader.setVec3("lightDirection", lightDirection);
+		blockShader.setInt("textureAtlas", 0);
 
 		for (auto& [coords, chunk]: chunks)
 		{
