@@ -75,9 +75,6 @@ public:
 	static constexpr int ChunkHeight = 256;  // y
 	static constexpr int ChunkDepth = 16;  // z
 
-private:
-	Coords chunkCoords;
-
 	void makeMesh()
 	{
 		auto const xVertices = ChunkWidth + 1;
@@ -160,6 +157,9 @@ private:
 		}
 		chunkMesh = BasicMesh{vertices, indices};
 	}
+
+private:
+	Coords chunkCoords;
 
 	BasicMesh chunkMesh;
 

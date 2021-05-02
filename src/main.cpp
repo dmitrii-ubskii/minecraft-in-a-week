@@ -262,8 +262,9 @@ int main()
 		}
 
 		// ray casting
+		auto placementBlock = std::optional<Coords>{};
 		auto activeBlock = std::optional<Coords>{};
-		for (auto t = 0; t < drawDistance * 16; t++)
+		for (auto t = 0; t < 16; t++)
 		{
 			auto block = Coords{cameraPos + (float)t * camera.getDirection()};
 			if (block.y > 255) break;
@@ -280,6 +281,7 @@ int main()
 			{
 				break;
 			}
+			placementBlock = block;
 		}
 
 		if (activeBlock.has_value())
@@ -292,6 +294,19 @@ int main()
 			glBindVertexArray(VAO);
 			glDrawElements(GL_LINE_STRIP, std::size(indices), GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);
+
+			if (context.getMouseButton(GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+			{
+				auto chunkCoords = getBlockChunk(*activeBlock);
+				chunks.at({chunkCoords.x, chunkCoords.z})[*activeBlock] = BlockType::Air;
+				chunks.at({chunkCoords.x, chunkCoords.z}).makeMesh();
+			}
+			if (context.getMouseButton(GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+			{
+				auto chunkCoords = getBlockChunk(*placementBlock);
+				chunks.at({chunkCoords.x, chunkCoords.z})[*placementBlock] = BlockType::Dirt;
+				chunks.at({chunkCoords.x, chunkCoords.z}).makeMesh();
+			}
 		}
 
 		quadShader.use();

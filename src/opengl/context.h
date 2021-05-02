@@ -39,6 +39,7 @@ public:
 
 	void pollEvents();
 	int getKey(int key) { return glfwGetKey(window, key); }
+	int getMouseButton(int button) { return glfwGetMouseButton(window, button); }
 	GLdouble getCursorDeltaX() { return cursorDeltaX; }
 	GLdouble getCursorDeltaY() { return cursorDeltaY; }
 
