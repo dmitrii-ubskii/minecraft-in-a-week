@@ -45,7 +45,6 @@ int main()
 	auto chunks = std::map<std::pair<int, int>, Chunk>{};
 
 	context.resetDeltaTime();
-	auto time = 0.f;
 
 	context.grabMouse();
 	auto const mouseSensitivity = 0.3f;
@@ -156,7 +155,6 @@ int main()
 	{
 		context.clear();
 		auto deltaTime = context.getDeltaTime();
-		time += deltaTime;
 		auto velocity = deltaTime * 35.f;
 		std::cerr << "             \r" << (int)(1.f/deltaTime) << " FPS\r";
 		
