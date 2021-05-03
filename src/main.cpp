@@ -301,6 +301,8 @@ int main()
 
 		context.swapBuffers();
 		context.pollEvents();
+
+		world.tick(playerChunk, drawDistance);
 	}
 
 	return 0;

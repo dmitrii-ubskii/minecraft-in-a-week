@@ -6,6 +6,7 @@ add_executable(mini-mc
     opengl/basic_mesh.cpp
     stb_image_impl.cpp
     cube.cpp
+    chunk.cpp
 )
 
 target_compile_features(mini-mc PRIVATE cxx_std_20)
