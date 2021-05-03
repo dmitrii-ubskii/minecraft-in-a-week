@@ -26,8 +26,7 @@ void main()
         lightIntensity = 0.0;
     }
 
-    fragColor *= 0.3 + 0.7 * lightIntensity;
-    fragColor.a = 1;
+    fragColor.rgb *= 0.3 + 0.7 * lightIntensity;
 
     float dist = length(position.xyz);
     float minFogDist = 0.8 * renderDistance;
