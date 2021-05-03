@@ -141,8 +141,8 @@ int main()
 	}
 
 	auto world = World{123456};
-	context.resetDeltaTime();
 
+	context.resetDeltaTime();
 	context.grabMouse();
 	auto const mouseSensitivity = 0.3f;
 	auto const drawDistance = 10;
