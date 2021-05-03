@@ -14,7 +14,7 @@ public:
 	{
 		auto altitude = 0.f;
 		for (auto scale = 16.f; scale > 1.f; scale /= 2.f)
-			altitude += glm::simplex(glm::vec3{seed / scale, 0.12f + v.x / scale, 0.45f + v.y / scale}) * scale * 2.f;
+			altitude += glm::simplex(glm::vec3{seed / scale, (12.345f + v.x) / scale, (123.45f + v.y) / scale}) * scale * 3.f;
 		return (int)altitude + 60;
 	}
 

@@ -18,7 +18,7 @@
 
 enum class BlockType
 {
-	Air, Grass, Dirt
+	Air, Grass, Dirt, Water
 };
 
 using Coords = glm::vec<3, int>;
@@ -31,6 +31,7 @@ public:
 	{
 		cubes.insert({BlockType::Grass, Cube{0, 1, 2}});
 		cubes.insert({BlockType::Dirt, Cube{2, 2, 2}});
+		cubes.insert({BlockType::Water, Cube{3, 3, 3}});
 
 		for (auto bx = 0; bx < ChunkWidth; bx++)
 		{
@@ -40,11 +41,29 @@ public:
 					(float)(bx + chunkCoords.x * ChunkWidth) / 16.f,
 					(float)(bz + chunkCoords.z * ChunkDepth) / 16.f
 				}), 0, ChunkHeight - 1);
+				
 				for (auto by = 0; by < altitude - 1; by++)
+				{
 					blocks[localCoordsToIndex({bx, by, bz})] = BlockType::Dirt;
-				blocks[localCoordsToIndex({bx, altitude - 1, bz})] = BlockType::Grass;
+				}
+
+				if (altitude >= WaterHeight)
+				{
+					blocks[localCoordsToIndex({bx, altitude - 1, bz})] = BlockType::Grass;
+				}
+				else
+				{
+					for (auto by = altitude - 1; by < WaterHeight; by++)
+					{
+						blocks[localCoordsToIndex({bx, by, bz})] = BlockType::Water;
+					}
+					altitude = WaterHeight;
+				}
+
 				for (auto by = altitude; by < ChunkHeight; by++)
+				{
 					blocks[localCoordsToIndex({bx, by, bz})] = BlockType::Air;
+				}
 			}
 		}
 
@@ -74,6 +93,8 @@ public:
 	static constexpr int ChunkWidth = 16;  // x
 	static constexpr int ChunkHeight = 256;  // y
 	static constexpr int ChunkDepth = 16;  // z
+
+	static constexpr int WaterHeight = 80;
 
 	void makeMesh()
 	{
