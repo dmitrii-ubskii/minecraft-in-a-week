@@ -40,14 +40,6 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	auto world = World{123456};
-	context.resetDeltaTime();
-
-	context.grabMouse();
-	auto const mouseSensitivity = 0.3f;
-	auto const drawDistance = 10;
-	auto const lightDirection = glm::normalize(glm::vec3{6, -3, 1});
-
 	auto shadowShader = Shader{"shaders/shadow_map.vert", "shaders/shadow_map.frag"};
 
 	unsigned shadowMapFBO;
@@ -147,6 +139,14 @@ int main()
 		stbi_image_free(data);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
+
+	auto world = World{123456};
+	context.resetDeltaTime();
+
+	context.grabMouse();
+	auto const mouseSensitivity = 0.3f;
+	auto const drawDistance = 10;
+	auto const lightDirection = glm::normalize(glm::vec3{6, -3, 1});
 
 	auto cooldown = 0.f;
 
