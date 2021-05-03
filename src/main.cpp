@@ -131,7 +131,6 @@ int main()
     glEnableVertexAttribArray(1);
 	// end quad
 
-	// Atlas stuff
 	unsigned crosshair;
 	{
 		glGenTextures(1, &crosshair);
