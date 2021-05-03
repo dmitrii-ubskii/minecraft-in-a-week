@@ -9,8 +9,7 @@
 #include "opengl/context.h"
 #include "opengl/shader.h"
 
-#include "chunk.h"
-#include "seeded_noise.h"
+#include "world.h"
 
 int main()
 {
@@ -41,9 +40,7 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	Noise noiseDevice{123456};
-	auto chunks = std::map<std::pair<int, int>, Chunk>{};
-
+	auto world = World{123456};
 	context.resetDeltaTime();
 
 	context.grabMouse();
@@ -191,9 +188,9 @@ int main()
 		{
 			auto cx = playerChunk.x + x;
 			auto cz = playerChunk.z + z;
-			if (not chunks.contains({cx, cz}))
+			if (not world.isGenerated({cx, cz}))
 			{
-				chunks.insert({std::pair{cx, cz}, Chunk{cx, cz, noiseDevice}});
+				world.generateChunk({cx, cz});
 				generated = true;
 			}
 
@@ -217,22 +214,7 @@ int main()
 		shadowShader.use();
 		shadowShader.setMat4("lightSpace", lightSpace);
 		shadowShader.setVec3("lightDirection", lightDirection);
-		for (auto& [coords, chunk]: chunks)
-		{
-			auto [x, z] = coords;
-			auto dx = playerChunk.x - x;
-			auto dz = playerChunk.z - z;
-			auto squareDist = dx * dx + dz * dz;
-			if (squareDist > drawDistance * drawDistance)
-				continue;
-			if (squareDist > 9)
-			{
-				auto direction = glm::normalize(glm::vec3{x - playerChunk.x, 0, z - playerChunk.z});
-				if (glm::dot(direction, camera.getDirection()) < 0.25f)
-					continue;
-			}
-			chunk.draw(shadowShader);
-		}
+		world.draw(shadowShader, playerChunk, camera.getDirection(), drawDistance);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		context.setViewport();
@@ -248,22 +230,8 @@ int main()
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, shadowMap);
 		blockShader.setInt("shadowMap", 1);
-		for (auto& [coords, chunk]: chunks)
-		{
-			auto [x, z] = coords;
-			auto dx = playerChunk.x - x;
-			auto dz = playerChunk.z - z;
-			auto squareDist = dx * dx + dz * dz;
-			if (squareDist > drawDistance * drawDistance)
-				continue;
-			if (squareDist > 9)
-			{
-				auto direction = glm::normalize(glm::vec3{x - playerChunk.x, 0, z - playerChunk.z});
-				if (glm::dot(direction, camera.getDirection()) < 0)
-					continue;
-			}
-			chunk.draw(blockShader);
-		}
+
+		world.draw(blockShader, playerChunk, camera.getDirection(), drawDistance);
 
 		// ray casting
 		auto placementBlock = std::optional<Coords>{};
@@ -278,9 +246,9 @@ int main()
 			};
 			if (block.y > 255) break;
 			auto chunkCoords = getBlockChunk(block);
-			if (chunks.contains({chunkCoords.x, chunkCoords.z}))
+			if (world.isGenerated({chunkCoords.x, chunkCoords.z}))
 			{
-				if (chunks.at({chunkCoords.x, chunkCoords.z})[block] != BlockType::Air)
+				if (world.at({chunkCoords.x, chunkCoords.z})[block] != BlockType::Air)
 				{
 					activeBlock = block;
 					break;
@@ -309,15 +277,15 @@ int main()
 				if (context.getMouseButton(GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 				{
 					auto chunkCoords = getBlockChunk(*activeBlock);
-					chunks.at({chunkCoords.x, chunkCoords.z})[*activeBlock] = BlockType::Air;
-					chunks.at({chunkCoords.x, chunkCoords.z}).makeMesh();
+					world.at({chunkCoords.x, chunkCoords.z})[*activeBlock] = BlockType::Air;
+					world.updateMesh({chunkCoords.x, chunkCoords.z});
 					cooldown = 0.1f;
 				}
 				if (context.getMouseButton(GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
 				{
 					auto chunkCoords = getBlockChunk(*placementBlock);
-					chunks.at({chunkCoords.x, chunkCoords.z})[*placementBlock] = BlockType::Dirt;
-					chunks.at({chunkCoords.x, chunkCoords.z}).makeMesh();
+					world.at({chunkCoords.x, chunkCoords.z})[*placementBlock] = BlockType::Dirt;
+					world.updateMesh({chunkCoords.x, chunkCoords.z});
 					cooldown = 0.1f;
 				}
 			}
