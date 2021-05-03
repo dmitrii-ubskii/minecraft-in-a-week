@@ -151,10 +151,17 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
+	auto cooldown = 0.f;
+
 	while (not context.shouldClose())
 	{
 		context.clear();
 		auto deltaTime = context.getDeltaTime();
+		if (cooldown > 0)
+		{
+			cooldown -= deltaTime;
+		}
+
 		auto velocity = deltaTime * 35.f;
 		std::cerr << "             \r" << (int)(1.f/deltaTime) << " FPS\r";
 		
@@ -297,17 +304,22 @@ int main()
 			glDrawElements(GL_LINE_STRIP, std::size(indices), GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);
 
-			if (context.getMouseButton(GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+			if (cooldown <= 0)
 			{
-				auto chunkCoords = getBlockChunk(*activeBlock);
-				chunks.at({chunkCoords.x, chunkCoords.z})[*activeBlock] = BlockType::Air;
-				chunks.at({chunkCoords.x, chunkCoords.z}).makeMesh();
-			}
-			if (context.getMouseButton(GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
-			{
-				auto chunkCoords = getBlockChunk(*placementBlock);
-				chunks.at({chunkCoords.x, chunkCoords.z})[*placementBlock] = BlockType::Dirt;
-				chunks.at({chunkCoords.x, chunkCoords.z}).makeMesh();
+				if (context.getMouseButton(GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+				{
+					auto chunkCoords = getBlockChunk(*activeBlock);
+					chunks.at({chunkCoords.x, chunkCoords.z})[*activeBlock] = BlockType::Air;
+					chunks.at({chunkCoords.x, chunkCoords.z}).makeMesh();
+					cooldown = 0.1f;
+				}
+				if (context.getMouseButton(GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+				{
+					auto chunkCoords = getBlockChunk(*placementBlock);
+					chunks.at({chunkCoords.x, chunkCoords.z})[*placementBlock] = BlockType::Dirt;
+					chunks.at({chunkCoords.x, chunkCoords.z}).makeMesh();
+					cooldown = 0.1f;
+				}
 			}
 		}
 
