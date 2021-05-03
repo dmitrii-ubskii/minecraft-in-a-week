@@ -20,6 +20,14 @@ enum class BlockType
 {
 	Air, Grass, Dirt, Water
 };
+constexpr bool isOpaque(BlockType block)
+{
+	return block == BlockType::Dirt || block == BlockType::Grass;
+}
+constexpr bool isTranslucent(BlockType block)
+{
+	return block == BlockType::Water;
+}
 
 using Coords = glm::vec<3, int>;
 
@@ -87,7 +95,8 @@ public:
 			chunkCoords.z * ChunkDepth,
 		};
 		shader.setMat4("model", glm::translate(glm::mat4{1.f}, pos));
-		chunkMesh.draw();
+		opaqueMesh.draw();
+		translucentMesh.draw();
 	}
 
 	static constexpr int ChunkWidth = 16;  // x
@@ -97,6 +106,82 @@ public:
 	static constexpr int WaterHeight = 80;
 
 	void makeMesh()
+	{
+		makeOpaqueMesh();
+		makeTranslucentMesh();
+	}
+
+	void makeOpaqueMesh()
+	{
+		auto const xVertices = ChunkWidth + 1;
+		auto const yVertices = ChunkHeight + 1;
+		auto const zVertices = ChunkDepth + 1;
+		auto const maxVertices = 2 * (xVertices * yVertices + yVertices * zVertices + zVertices * xVertices);
+
+		auto vertices = std::vector<Vertex>{};
+		vertices.reserve(maxVertices);
+
+		for (auto x = 0; x < ChunkWidth; x++)
+		{
+			for (auto y = 0; y < ChunkHeight; y++)
+			{
+				for (auto z = 0; z < ChunkDepth; z++)
+				{
+					auto index = localCoordsToIndex({x, y, z});
+					if (not isOpaque(blocks[index]))
+						continue;
+					if (x == 0 || not isOpaque(blocks[localCoordsToIndex({x - 1, y, z})]))
+					{
+						auto faceVertices = cubes.at(blocks[index]).getLeftFace({x, y, z});
+						std::copy(faceVertices.cbegin(), faceVertices.cend(), std::back_inserter(vertices));
+					}
+					if (x == ChunkWidth - 1 || not isOpaque(blocks[localCoordsToIndex({x + 1, y, z})]))
+					{
+						auto faceVertices = cubes.at(blocks[index]).getRightFace({x, y, z});
+						std::copy(faceVertices.cbegin(), faceVertices.cend(), std::back_inserter(vertices));
+					}
+
+					if (y == 0 || not isOpaque(blocks[localCoordsToIndex({x, y - 1, z})]))
+					{
+						auto faceVertices = cubes.at(blocks[index]).getBottomFace({x, y, z});
+						std::copy(faceVertices.cbegin(), faceVertices.cend(), std::back_inserter(vertices));
+					}
+					if (y == ChunkHeight - 1 || not isOpaque(blocks[localCoordsToIndex({x, y + 1, z})]))
+					{
+						auto faceVertices = cubes.at(blocks[index]).getTopFace({x, y, z});
+						std::copy(faceVertices.cbegin(), faceVertices.cend(), std::back_inserter(vertices));
+					}
+
+					if (z == 0 || not isOpaque(blocks[localCoordsToIndex({x, y, z - 1})]))
+					{
+						auto faceVertices = cubes.at(blocks[index]).getFrontFace({x, y, z});
+						std::copy(faceVertices.cbegin(), faceVertices.cend(), std::back_inserter(vertices));
+					}
+					if (z == ChunkDepth - 1 || not isOpaque(blocks[localCoordsToIndex({x, y, z + 1})]))
+					{
+						auto faceVertices = cubes.at(blocks[index]).getBackFace({x, y, z});
+						std::copy(faceVertices.cbegin(), faceVertices.cend(), std::back_inserter(vertices));
+					}
+				}
+			}
+		}
+
+		auto indices = std::vector<unsigned>{};
+		indices.reserve(vertices.size() * 6 / 4);  // 6 indices for each four vertices
+		for (auto i = 0u; i < vertices.size(); i += 4)
+		{
+			indices.push_back(i);
+			indices.push_back(i + 1);
+			indices.push_back(i + 2);
+
+			indices.push_back(i + 2);
+			indices.push_back(i + 1);
+			indices.push_back(i + 3);
+		}
+		opaqueMesh = BasicMesh{vertices, indices};
+	}
+
+	void makeTranslucentMesh()
 	{
 		auto const xVertices = ChunkWidth + 1;
 		auto const yVertices = ChunkHeight + 1;
@@ -151,19 +236,6 @@ public:
 			}
 		}
 
-		// bottom face
-		for (auto x = 0; x < ChunkWidth; x++)
-		{
-			for (auto z = 0; z < ChunkDepth; z++)
-			{
-				auto index = localCoordsToIndex({x, 0, z});
-				if (blocks[index] == BlockType::Air)
-					continue;
-				auto faceVertices = cubes.at(blocks[index]).getBottomFace({x, 0, z});
-				std::copy(faceVertices.cbegin(), faceVertices.cend(), std::back_inserter(vertices));
-			}
-		}
-
 		auto indices = std::vector<unsigned>{};
 		indices.reserve(vertices.size() * 6 / 4);  // 6 indices for each four vertices
 		for (auto i = 0u; i < vertices.size(); i += 4)
@@ -176,13 +248,14 @@ public:
 			indices.push_back(i + 1);
 			indices.push_back(i + 3);
 		}
-		chunkMesh = BasicMesh{vertices, indices};
+		translucentMesh = BasicMesh{vertices, indices};
 	}
 
 private:
 	Coords chunkCoords;
 
-	BasicMesh chunkMesh;
+	BasicMesh opaqueMesh;
+	BasicMesh translucentMesh;
 
 	std::size_t localCoordsToIndex(Coords localCoords)
 	{
