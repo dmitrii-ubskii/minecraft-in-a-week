@@ -1,0 +1,52 @@
+= Minecraft in a week
+
+:imagesdir: screens
+
+== Day 1
+
+image::day-01.png[]
+
+- Boilerplate for setting up OpenGL context;
+- drawing and texturing a cube;
+- camera movement (keyboard only).
+
+== Day 2
+
+image::day-02.png[]
+
+- First steps in world generation;
+- camera movement & mouselook;
+- basic lighting and distance fog.
+
+== Day 3
+
+image::day-03.png[]
+
+- Infinite world generation;
+- 3D mesh handling class.
+
+== Day 4
+
+image::day-04.png[]
+
+- Assembling a chunk mesh;
+- smoother terrain;
+- shadows;
+- frustum culling (a bad approximation of);
+- casting a ray from the camera to find the targeted block;
+- block placing and breaking.
+
+== Day 5
+
+image::day-05.png[]
+
+- Water!
+- Translucency support -- separate opaque and translucent meshes for each chunk;
+- only draw faces that aren't obstructed by other chunks.
+
+== Day 6
+
+image::day-06.png[]
+
+- Trees!
+- Some miscellaneous cleanup.
