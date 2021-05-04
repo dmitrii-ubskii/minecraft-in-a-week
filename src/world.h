@@ -80,7 +80,14 @@ public:
 
 	void updateMesh(std::pair<int, int> coords)
 	{
-		remeshBacklog.insert(coords);
+		auto [cx, cz] = coords;
+		for (auto [x, z]: std::array<std::pair<int, int>, 5>{coords, {cx-1, cz}, {cx+1, cz}, {cx, cz-1}, {cx, cz+1}})
+		{
+			if (isGenerated({x, z}))
+			{
+				remeshBacklog.insert({x, z});
+			}
+		}
 	}
 
 	void tick(Coords playerChunk, int drawDistance)
