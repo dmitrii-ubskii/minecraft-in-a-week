@@ -214,7 +214,7 @@ int main()
 		shadowShader.use();
 		shadowShader.setMat4("lightSpace", lightSpace);
 		shadowShader.setVec3("lightDirection", lightDirection);
-		world.draw(shadowShader, playerChunk, camera.getDirection(), drawDistance);
+		world.drawOpaque(shadowShader, playerChunk, camera.getDirection(), drawDistance);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		context.setViewport();

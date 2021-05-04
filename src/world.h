@@ -35,7 +35,7 @@ public:
 			}
 	}
 
-	void draw(Shader& shader, Coords playerChunk, glm::vec3 cameraDirection, int drawDistance)
+	void drawOpaque(Shader& shader, Coords playerChunk, glm::vec3 cameraDirection, int drawDistance)
 	{
 		for (auto& [coords, chunk]: chunks)
 		{
@@ -53,6 +53,11 @@ public:
 			}
 			chunk.drawOpaque(shader);
 		}
+	}
+
+	void draw(Shader& shader, Coords playerChunk, glm::vec3 cameraDirection, int drawDistance)
+	{
+		drawOpaque(shader, playerChunk, cameraDirection, drawDistance);
 		for (auto& [coords, chunk]: chunks)
 		{
 			auto [x, z] = coords;
