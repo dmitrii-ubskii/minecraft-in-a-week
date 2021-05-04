@@ -18,15 +18,18 @@
 
 enum class BlockType
 {
-	Air, Grass, Dirt, Water
+	Air, Grass, Dirt, Water, Wood, Leaves
 };
 constexpr bool isOpaque(BlockType block)
 {
-	return block == BlockType::Dirt || block == BlockType::Grass;
+	return block == BlockType::Dirt
+		|| block == BlockType::Grass
+		|| block == BlockType::Wood;
 }
 constexpr bool isTranslucent(BlockType block)
 {
-	return block == BlockType::Water;
+	return block == BlockType::Water
+		|| block == BlockType::Leaves;
 }
 
 using Coords = glm::vec<3, int>;
@@ -43,6 +46,8 @@ public:
 		cubes.insert({BlockType::Grass, Cube{0, 1, 2}});
 		cubes.insert({BlockType::Dirt, Cube{2, 2, 2}});
 		cubes.insert({BlockType::Water, Cube{3, 3, 3}});
+		cubes.insert({BlockType::Wood, Cube{4, 5, 4}});
+		cubes.insert({BlockType::Leaves, Cube{6, 6, 6}});
 
 		for (auto bx = 0; bx < ChunkWidth; bx++)
 		{
