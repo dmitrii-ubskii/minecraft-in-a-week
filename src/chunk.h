@@ -57,7 +57,7 @@ public:
 					(float)(bx + chunkCoords.x * ChunkWidth) / 16.f,
 					(float)(bz + chunkCoords.z * ChunkDepth) / 16.f
 				}), 0, ChunkHeight - 1);
-				
+
 				for (auto by = 0; by < altitude - 1; by++)
 				{
 					blocks[localCoordsToIndex({bx, by, bz})] = BlockType::Dirt;
