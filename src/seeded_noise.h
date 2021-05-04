@@ -18,6 +18,11 @@ public:
 		return (int)altitude + 60;
 	}
 
+	bool treeAt(glm::vec2 const& v)
+	{
+		return glm::simplex(glm::vec3{seed * 1.1f, (12.345f + v.x * 1000), (123.45f + v.y * 1000)}) > 0.8f;
+	}
+
 private:
 	float seed;
 };

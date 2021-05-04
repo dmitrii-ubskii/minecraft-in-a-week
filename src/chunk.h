@@ -82,6 +82,20 @@ public:
 				}
 			}
 		}
+
+		for (auto bx = 0; bx < ChunkWidth; bx++)
+		{
+			for (auto bz = 0; bz < ChunkDepth; bz++)
+			{
+				if (device.treeAt({(float)(bx + chunkCoords.x * ChunkWidth), (float)(bz + chunkCoords.z * ChunkDepth)}))
+				{
+					if (topBlock(bx, bz) == BlockType::Grass)
+					{
+						placeTree(bx, bz);
+					}
+				}
+			}
+		}
 	}
 
 	Chunk(Chunk&&) = default;
@@ -144,6 +158,94 @@ private:
 		assert(localCoords.y < ChunkHeight);
 		assert(localCoords.z < ChunkDepth);
 		return (std::size_t)((localCoords.x * ChunkHeight + localCoords.y) * ChunkDepth + localCoords.z);
+	}
+
+	BlockType topBlock(int x, int z)
+	{
+		auto y = ChunkHeight - 1;
+		while (y > 0 && blocks[localCoordsToIndex({x, y, z})] == BlockType::Air)
+		{
+			y--;
+		}
+		return blocks[localCoordsToIndex({x, y, z})];
+	}
+
+	void trySetBlock(Coords localCoords, BlockType block)
+	{
+		if (localCoords.x < 0 || localCoords.x >= ChunkWidth)
+			return;
+		if (localCoords.y < 0 || localCoords.y >= ChunkHeight)
+			return;
+		if (localCoords.z < 0 || localCoords.z >= ChunkDepth)
+			return;
+		blocks[localCoordsToIndex(localCoords)] = block;
+	}
+
+	void placeTree(int x, int z)
+	{
+		auto y = ChunkHeight - 1;
+		while (y > 0 && blocks[localCoordsToIndex({x, y-1, z})] == BlockType::Air)
+		{
+			y--;
+		}
+		trySetBlock({x, y, z}, BlockType::Wood);
+		trySetBlock({x, y+1, z}, BlockType::Wood);
+
+		trySetBlock({x, y+2, z}, BlockType::Wood);
+		trySetBlock({x-1, y+2, z-1}, BlockType::Leaves);
+		trySetBlock({x-1, y+2, z}, BlockType::Leaves);
+		trySetBlock({x-1, y+2, z+1}, BlockType::Leaves);
+		trySetBlock({x, y+2, z-1}, BlockType::Leaves);
+		trySetBlock({x, y+2, z+1}, BlockType::Leaves);
+		trySetBlock({x+1, y+2, z-1}, BlockType::Leaves);
+		trySetBlock({x+1, y+2, z}, BlockType::Leaves);
+		trySetBlock({x+1, y+2, z+1}, BlockType::Leaves);
+		trySetBlock({x-2, y+2, z-1}, BlockType::Leaves);
+		trySetBlock({x-2, y+2, z}, BlockType::Leaves);
+		trySetBlock({x-2, y+2, z+1}, BlockType::Leaves);
+		trySetBlock({x+2, y+2, z-1}, BlockType::Leaves);
+		trySetBlock({x+2, y+2, z}, BlockType::Leaves);
+		trySetBlock({x+2, y+2, z+1}, BlockType::Leaves);
+		trySetBlock({x-1, y+2, z-2}, BlockType::Leaves);
+		trySetBlock({x, y+2, z-2}, BlockType::Leaves);
+		trySetBlock({x+1, y+2, z-2}, BlockType::Leaves);
+		trySetBlock({x-1, y+2, z+2}, BlockType::Leaves);
+		trySetBlock({x, y+2, z+2}, BlockType::Leaves);
+		trySetBlock({x+1, y+2, z+2}, BlockType::Leaves);
+
+		trySetBlock({x, y+3, z}, BlockType::Wood);
+		trySetBlock({x-1, y+3, z-1}, BlockType::Leaves);
+		trySetBlock({x-1, y+3, z}, BlockType::Leaves);
+		trySetBlock({x-1, y+3, z+1}, BlockType::Leaves);
+		trySetBlock({x, y+3, z-1}, BlockType::Leaves);
+		trySetBlock({x, y+3, z+1}, BlockType::Leaves);
+		trySetBlock({x+1, y+3, z-1}, BlockType::Leaves);
+		trySetBlock({x+1, y+3, z}, BlockType::Leaves);
+		trySetBlock({x+1, y+3, z+1}, BlockType::Leaves);
+		trySetBlock({x-2, y+3, z-1}, BlockType::Leaves);
+		trySetBlock({x-2, y+3, z}, BlockType::Leaves);
+		trySetBlock({x-2, y+3, z+1}, BlockType::Leaves);
+		trySetBlock({x+2, y+3, z-1}, BlockType::Leaves);
+		trySetBlock({x+2, y+3, z}, BlockType::Leaves);
+		trySetBlock({x+2, y+3, z+1}, BlockType::Leaves);
+		trySetBlock({x-1, y+3, z-2}, BlockType::Leaves);
+		trySetBlock({x, y+3, z-2}, BlockType::Leaves);
+		trySetBlock({x+1, y+3, z-2}, BlockType::Leaves);
+		trySetBlock({x-1, y+3, z+2}, BlockType::Leaves);
+		trySetBlock({x, y+3, z+2}, BlockType::Leaves);
+		trySetBlock({x+1, y+3, z+2}, BlockType::Leaves);
+
+		trySetBlock({x, y+4, z}, BlockType::Leaves);
+		trySetBlock({x+1, y+4, z}, BlockType::Leaves);
+		trySetBlock({x-1, y+4, z}, BlockType::Leaves);
+		trySetBlock({x, y+4, z+1}, BlockType::Leaves);
+		trySetBlock({x, y+4, z-1}, BlockType::Leaves);
+
+		trySetBlock({x, y+5, z}, BlockType::Leaves);
+		trySetBlock({x+1, y+5, z}, BlockType::Leaves);
+		trySetBlock({x-1, y+5, z}, BlockType::Leaves);
+		trySetBlock({x, y+5, z+1}, BlockType::Leaves);
+		trySetBlock({x, y+5, z-1}, BlockType::Leaves);
 	}
 
 	std::array<BlockType, ChunkWidth * ChunkHeight * ChunkDepth> blocks;
