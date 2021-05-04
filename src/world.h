@@ -23,16 +23,13 @@ public:
 	{
 		auto [cx, cz] = coords;
 		chunks.insert({std::pair{cx, cz}, Chunk{this, cx, cz, noiseDevice}});
-		for (auto dx = -1; dx <= 1; dx++)
-			for (auto dz = -1; dz <= 1; dz++)
+		for (auto [x, z]: std::array<std::pair<int, int>, 4>{std::pair{cx-1, cz}, {cx+1, cz}, {cx, cz-1}, {cx, cz+1}})
+		{
+			if (isGenerated({x, z}))
 			{
-				auto x = cx + dx;
-				auto z = cz + dz;
-				if (isGenerated({x, z}))
-				{
-					remeshBacklog.insert({x, z});
-				}
+				remeshBacklog.insert({x, z});
 			}
+		}
 	}
 
 	void drawOpaque(Shader& shader, Coords playerChunk, glm::vec3 cameraDirection, int drawDistance)
