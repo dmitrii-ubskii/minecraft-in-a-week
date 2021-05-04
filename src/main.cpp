@@ -8,6 +8,7 @@
 #include "opengl/camera.h"
 #include "opengl/context.h"
 #include "opengl/shader.h"
+#include "opengl/quad.h"
 
 #include "world.h"
 
@@ -90,34 +91,6 @@ int main()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-
-	// quad
-	auto quadShader = Shader{"shaders/quad.vert", "shaders/quad.frag"};
-	float quadVertices[] = {
-        // positions          // texture coords
-         1.0f,  1.0f, 0.0f,   1.0f, 1.0f, // top right
-         1.0f, -1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-        -1.0f, -1.0f, 0.0f,   0.0f, 0.0f, // bottom left
-        -1.0f,  1.0f, 0.0f,   0.0f, 1.0f  // top left 
-    };
-    unsigned int quadIndices[] = {
-        0, 3, 1,
-        1, 3, 2
-    };
-    unsigned int quadVBO, quadVAO, quadEBO;
-    glGenVertexArrays(1, &quadVAO);
-    glGenBuffers(1, &quadVBO);
-    glGenBuffers(1, &quadEBO);
-    glBindVertexArray(quadVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quadEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(quadIndices), quadIndices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-	// end quad
 
 	unsigned crosshair;
 	{
@@ -291,13 +264,7 @@ int main()
 			}
 		}
 
-		quadShader.use();
-		quadShader.setVec2("scale", {16.f/800.f, 16.f/600.f});
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, crosshair);
-		quadShader.setInt("image", 0);
-		glBindVertexArray(quadVAO);
-		glDrawElements(GL_TRIANGLES, std::size(quadIndices), GL_UNSIGNED_INT, 0);
+		drawQuad(crosshair, 400, 300, 16, 16);
 
 		context.swapBuffers();
 		context.pollEvents();
