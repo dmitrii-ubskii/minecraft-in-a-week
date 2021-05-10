@@ -12,6 +12,8 @@ target_include_directories(glad
     PRIVATE
     3rd_party/glad-gl4.6-core/include)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+
 add_compile_options(
         -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wcast-align -Wunused
         -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion

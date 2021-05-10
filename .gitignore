@@ -3,5 +3,6 @@
 .ccls-cache/
 
 # Build files
+bin/
 build/
 compile_commands.json
