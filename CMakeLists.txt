@@ -17,7 +17,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 add_compile_options(
         -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wcast-align -Wunused
         -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion
-        -Wmisleading-indentation -Wnull-dereference -Wdouble-promotion -Wformat=2
-        -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wuseless-cast)
+        -Wmisleading-indentation -Wnull-dereference -Wdouble-promotion -Wformat=2)
 
 add_subdirectory(src)
